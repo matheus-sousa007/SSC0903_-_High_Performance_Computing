@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <omp.h>
 #include<time.h>
 
 //funcao merge para juntar particoes do vetor e ordena-los
@@ -64,8 +65,10 @@ void mergeSort(int arr[], int l, int r)
 int main(){
     
     int R, C, A, seed, i, j, k;
-    int maiorB, menorB;
-    double mediaB, dpB;
+    int maiorB, menorB, premR=0, premC[2];
+    double mediaB, dpB, wtime;
+    premC[0] = 0;
+    premC[1] = 0;
 
     scanf("%d %d %d %d", &R, &C, &A, &seed);
     
@@ -128,6 +131,8 @@ int main(){
 
     }
 
+    wtime = omp_get_wtime();
+
     mediaB=0;
     for(i=0; i<R; i++){
 
@@ -155,6 +160,10 @@ int main(){
             }
             mediaR[i] += mediaC[i][j];
             mediaC[i][j] /= A;
+            if(mediaC[i][j] > mediaC[premC[0]][premC[1]]){
+                premC[0] = i;
+                premC[1] = j;
+            }
 
             //calcular desvio padrao da cidade j 
             for(k=0; k<A; k++){
@@ -167,6 +176,9 @@ int main(){
         //somar notas a variavel mediaB tambem e pegar a media da regiao i
         mediaB += mediaR[i];
         mediaR[i] /= (C*A);
+        if(mediaR[i] > mediaR[premR]){
+            premR = i;
+        }
 
         //descobrir a maior e a menor nota da regiao i // calcular dp da regiao i
         dpR[i] = 0;
@@ -219,6 +231,8 @@ int main(){
     }
     dpB = sqrt(dpB/(A*R*C)); 
 
+    wtime = omp_get_wtime() - wtime;
+
     //imprimir resultados
     for(i=0; i<R; i++){
 
@@ -239,7 +253,10 @@ int main(){
 
     printf("Brasil: menor: %d, maior: %d, mediana: %0.2lf, média: %0.2lf e DP: %0.2lf\n", menorB, maiorB, 0.0, mediaB, dpB);
 
+    printf("Melhor região: Região %d\n", premR);
+    printf("Melhor cidade: Região %d, Cidade %d\n", premC[0], premC[1]);
 
+    printf("Tempo de resposta sem considerar E/S, em segundos: %lfs\n", wtime);
  
     //desalocar memoria
     for(i=0; i<R; i++){
