@@ -8,7 +8,7 @@ O modelo PCAM apresenta a possível paralelização do código sequencial feito 
 
 ### Particionamento
 
-Primeiramente, no código paralelo, é feita a leitura, de forma sequencial, dos inputs referentes as quantidades de regiões, cidades e alunos, respectivamente. Juntamente, temos a leitura da semente do gerador de números pseudo-aleatório. Após a leitura, é feita em paralelo a alocação na memória e a geração dos números pseudo-aleatórios. Cada tarefa gerará um número pseudo-aleatório.
+Primeiramente, no código paralelo, é feita a leitura, de forma sequencial, dos inputs referentes as quantidades de regiões, cidades e alunos, respectivamente. Juntamente, temos a leitura da semente do gerador de números pseudo-aleatório. Após a leitura, é feita, de forma sequencial, a alocação na memória e a geração dos números pseudo-aleatórios.
 
 Com a criação dos dados podemos extrair as informações que necessitamos para resolução do problema. Para particionar o máximo possível, será atribuida uma tarefa para cada nota gerada, conténdo assim uma granulação fina. 
 
