@@ -31,6 +31,3 @@ Para calcular a média de áreas superiores, podemos armazenar as médias de ár
 Para calcular o desvio padrão, podemos aproveitar e realizar operação de redução de soma em cada soma dos quadrados de cada área menor. Depois, divide-se pelo número de áreas menores e subtrai pela média dá área.
 
 ### Comunicação
-
-
-
