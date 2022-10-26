@@ -42,4 +42,8 @@ Vale ressaltar que, para que seja obtido a cidade e a região com as maiores mé
 
 ### Aglomeração
 
+A partir deste momento será considerada a plataforma alvo para o problema. Visto que o objetivo é executar o programa no cluster do ICMC, o tipo de plataforma a ser considerada será uma máquina MIMD com memória distribuída.
+
+Para a aglomeração teremos uma quantidade de threads T visto que faremos uma relação (1:1) para criação de threads e o número de threads que a máquina suporta. Sendo assim, serão criadas as T threads com cada uma tendo uma carga de trabalho (R * C) / T, sendo R e C o número de regiões e cidades respectivamente.
+
 ### Mapeamento
