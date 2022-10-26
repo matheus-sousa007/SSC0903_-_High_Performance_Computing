@@ -16,8 +16,6 @@ Para podermos adquirir os valores máximo, mínimo e a médiana, podemos fazer u
 
 Primeiramente teremos cada tarefa como sendo cada nota de uma respectiva cidade. Para cada tarefa, faremos comparações com cada valor. Será feito um loop com um valor k com o limites de iteração entre 0 e 100 (inclusive) para fazer as comparações. Para cada comparação é feita uma operação de redução de soma das tarefas, assim encontrando as frequencias de cada nota no final da operação.
 
-Depois, ainda executando em paralelo cada cidade porém sequencialmente dentro de cada uma, podemos repreencher o vetor com os dados ordenados, assim, finalizando o counting sort.
-
 Após isso, pegar os valores mínimo, máximo e a mediana são constantes em tempo. 
 
 A média deve ser calculada da seguinte forma: podemos fazer uma operação de redução de soma para cada tarefa em cada cidade e obter a soma total das notas. No final, basta apenas dividir pelo valor de alunos fornecido que teremos cada média de cada cidade. 
@@ -34,7 +32,7 @@ Quanto a cidade e a região com melhores médias, podem ser descorbetas por meio
 
 ### Comunicação
 
-Primeiramente, na contagem das frequências das notas para uma cidade, os valores de k (0 a 100) a serem comparados com cada nota devem ser enviados, via broadcast, à cada tarefa responsável por um determinado aluno. Ademais, para cada valor de k, será feita uma redução de soma para obter a frequência do valor k e atribui-lo ao vetor de frequências. O próximo ponto em que é necessário realizar uma comunicação entres as tarefas seria a soma das notas e das potências ao quadrado delas, a fim de obter a média e o desvio padrão.
+Primeiramente, na contagem das frequências das notas para uma cidade, os valores de k (0 a 100) a serem comparados com cada nota devem ser enviados, via broadcast, à cada tarefa responsável por um determinado aluno dentro de sua cidade. Ademais, para cada valor de k, será feita uma redução de soma para obter a frequência do valor k e atribui-lo ao vetor de frequências. O próximo ponto em que é necessário realizar uma comunicação entres as tarefas seria a soma das notas e das potências ao quadrado delas, a fim de obter a média e o desvio padrão.
 
 Além disso, para obter a frequência de notas de uma região, os vetores de frequência de cada cidade devem ser unificados, logo, precisa haver uma sincronização. E para cada região também haverá uma redução de soma para descobrir a média e o desvio padrão das notas. Por fim, para o Brasil, ocorreria também uma unificação dos vetores de frequência das regiões e reduções de soma para a média  e o desvio padrão.
 
@@ -44,9 +42,8 @@ Vale ressaltar que, para que seja obtido a cidade e a região com as maiores mé
 
 A partir deste momento será considerada a plataforma alvo para o problema. Visto que o objetivo é executar o programa no cluster do ICMC, o tipo de plataforma a ser considerada será uma máquina MIMD com memória distribuída.
 
-Para a aglomeração teremos uma quantidade de threads T visto que faremos uma relação (1:1) para criação de threads e o número de threads que a máquina suporta. Sendo assim, serão criadas as T threads com cada uma tendo uma carga de trabalho (R * C) / T, sendo R e C o número de regiões e cidades respectivamente.
+Para a aglomeração teremos uma quantidade de threads T visto que faremos uma relação (1:1) para criação de threads e o número de threads que a máquina suporta. Sendo assim, serão criadas as T threads com cada uma tendo uma carga de trabalho (R * C * A) / T, sendo R e C o número de regiões e cidades respectivamente.
 
-Para cada thread devemos garantir que todas as notas de todos os alunos de uma certa cidade estejam dentro da mesma thread. Caso não esteja, gerará atrasos consideráveis nas operações posteriores. 
-
+Para cada thread devemos garantir que todas as notas de todos os alunos de uma certa cidade estejam dentro da mesma thread. Caso não esteja, gerará atrasos consideráveis nas operações posteriores.
 
 ### Mapeamento
