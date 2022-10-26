@@ -34,6 +34,12 @@ Quanto a cidade e a região com melhores médias, podem ser descorbetas por meio
 
 ### Comunicação
 
+Primeiramente, na contagem das frequências das notas para uma cidade, os valores de k (0 a 100) a serem comparados com cada nota devem ser enviados, via broadcast, à cada tarefa responsável por um determinado aluno. Ademais, para cada valor de k, será feita uma redução de soma para obter a frequência do valor k e atribui-lo ao vetor de frequências. O próximo ponto em que é necessário realizar uma comunicação entres as tarefas seria a soma das notas e das potências ao quadrado delas, a fim de obter a média e o desvio padrão.
+
+Além disso, para obter a frequência de notas de uma região, os vetores de frequência de cada cidade devem ser unificados, logo, precisa haver uma sincronização. E para cada região também haverá uma redução de soma para descobrir a média e o desvio padrão das notas. Por fim, para o Brasil, ocorreria também uma unificação dos vetores de frequência das regiões e reduções de soma para a média  e o desvio padrão.
+
+Vale ressaltar que, para que seja obtido a cidade e a região com as maiores médias, haverá uma redução para obter o máximo entre as médias das cidades e das regiões.
+
 ### Aglomeração
 
 ### Mapeamento
