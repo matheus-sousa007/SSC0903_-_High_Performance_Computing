@@ -4,62 +4,6 @@
 #include <omp.h>
 #include <time.h>
 
-/* //funcao merge para juntar particoes do vetor e ordena-los
-void merge(int arr[], int l, int m, int r)
-{
-    int i, j, k;
-    int n1 = m - l + 1;
-    int n2 = r - m;
-
-    int L[n1], R[n2];
- 
-    for (i = 0; i < n1; i++)
-        L[i] = arr[l + i];
-    for (j = 0; j < n2; j++)
-        R[j] = arr[m + 1 + j];
- 
-
-    i = 0; 
-    j = 0;
-    k = l;
-    while (i < n1 && j < n2) {
-        if (L[i] <= R[j]) {
-            arr[k] = L[i];
-            i++;
-        }
-        else {
-            arr[k] = R[j];
-            j++;
-        }
-        k++;
-    }
- 
-    while (i < n1) {
-        arr[k] = L[i];
-        i++;
-        k++;
-    }
- 
-    while (j < n2) {
-        arr[k] = R[j];
-        j++;
-        k++;
-    }
-}
- 
-//funcao mergesort para ordenacao
-void mergeSort(int arr[], int l, int r)
-{
-    if (l < r) {
-   
-        int m = l + (r - l) / 2;
- 
-        mergeSort(arr, l, m);
-        mergeSort(arr, m + 1, r);
- 
-        merge(arr, l, m, r);
-    }
-} */
 
 void countFrequencies(int arr[], int A, int freq[])
 {
@@ -72,10 +16,8 @@ void countFrequencies(int arr[], int A, int freq[])
 int main(){
     
     int R, C, A, seed, i, j, k;
-    int maiorB, menorB, premR=0, premC[2];
+    int maiorB, menorB, premR=0, premC[2] = {0};
     double mediaB, medianaB, dpB, wtime;
-    premC[0] = 0;
-    premC[1] = 0;
 
     scanf("%d %d %d %d", &R, &C, &A, &seed);
     
@@ -121,23 +63,16 @@ int main(){
 
     }
 
-    //imprimir matrizes
+    /* //imprimir matrizes
     for(i=0; i<R; i++){
-
         for(j=0; j<C; j++){
-
             for(k=0; k<A; k++){
-
                 printf("%d ", notas[i][j][k]);
-
             }
-
-             printf("\n");
+            printf("\n");
         }
-
         printf("\n");
-
-    }
+    } */
 
     wtime = omp_get_wtime();
 
@@ -149,20 +84,6 @@ int main(){
         mediaR[i]=0;
         for(j=0; j<C; j++){
             
-            /* //Ordenar as notas da cidade
-            mergeSort(notas[i][j], 0, A-1);
-
-            //pegar a maior e menor nota da cidade
-            maiorC[i][j] = notas[i][j][A-1];
-            menorC[i][j] = notas[i][j][0];
-
-            //pegar a mediana da cidade
-            if(A % 2 == 0){
-                medianaC[i][j] = (notas[i][j][A/2] + notas[i][j][(A/2) - 1])/2;
-            } else {
-                medianaC[i][j] = notas[i][j][A/2];
-            } */
-
             //contar frequencia de cada nota
             int* frequencies = (int *)calloc(101, sizeof(int));
             countFrequencies(notas[i][j], A, frequencies);
@@ -263,26 +184,6 @@ int main(){
                 break;
             }
         }
-
-        /* //descobrir a maior e a menor nota da regiao i // calcular dp da regiao i
-        dpR[i] = 0;
-        maiorR[i] = maiorC[i][0];
-        menorR[i] = menorC[i][0];
-        for(j=0; j<C; j++){
-            if(maiorR[i] < maiorC[i][j]){
-                maiorR[i] = maiorC[i][j];
-            }
-
-            if(menorR[i] > menorC[i][j]){
-                menorR[i] = menorC[i][j];
-            }
-
-            for(k=0; k<A; k++){
-
-                dpR[i] += pow(notas[i][j][k] - mediaR[i],2);
-
-            }
-        } */
 
         //descobrir a maior e a menor nota da regiao i // calcular dp da regiao i
         dpR[i] = 0;
