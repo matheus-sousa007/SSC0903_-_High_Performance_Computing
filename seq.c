@@ -4,49 +4,163 @@
 #include <omp.h>
 #include <time.h>
 
+typedef short int sh;
 
-void countFrequencies(int arr[], int A, int freq[])
+#define MAX_GRADE 100
+#define MIN_GRADE 0
+
+void countFrequencies(sh arr[], int A, int freq[])
 {
     for (int i = 0; i < A; i++){
         freq[arr[i]]++;
     }
 }
 
+sh ***allocate_data(int R, int C, int A, int seed){
+    srand(seed);
+
+    sh *** data = (sh ***)malloc(R * sizeof(sh **));
+
+    for(int i = 0; i < R; ++i){
+        data[i] = (sh **)malloc(C * sizeof(sh *));
+        for(int j = 0; j < C; ++j){
+            data[i][j] = (sh *)malloc(A * sizeof(sh));
+            for(int k = 0; k < A; ++k){
+                data[i][j][k] = rand() % (MAX_GRADE + 1);
+            }
+        }
+    }
+
+    return data;
+}
+
+void deallocate_data(sh ***data, int R, int C, int A){
+    for(int i = 0; i < R; ++i){
+        for(int j = 0; j < C; ++j){
+            free(data[i][j]);
+        }
+        free(data[i]);
+    }
+    free(data);
+}
+
+void allocate_city_data(int ***maxC, int ***minC, double ***medianC, double ***mediaC, double ***dpC, int R, int C){
+    *maxC = (int **)malloc(R*sizeof(int*));
+    *minC = (int **)malloc(R*sizeof(int*));
+    *medianC = (double **)malloc(R*sizeof(double*));
+    *mediaC = (double **)malloc(R*sizeof(double*));
+    *dpC = (double **)malloc(R*sizeof(double*));
+
+    for(int i=0; i<R; i++){
+        (*maxC)[i] = (int*)malloc(C*sizeof(int));
+        (*minC)[i] = (int*)malloc(C*sizeof(int));
+        (*medianC)[i] = (double*)malloc(C*sizeof(double));
+        (*mediaC)[i] = (double*)malloc(C*sizeof(double));
+        (*dpC)[i] = (double*)malloc(C*sizeof(double));
+    }
+}
+
+void deallocate_city_data(int **maxC, int **minC, double **medianC, double **mediaC, double **dpC, int R){
+    for(int i=0; i<R; i++){
+        free(maxC[i]);
+        free(minC[i]);
+        free(medianC[i]);
+        free(mediaC[i]);
+        free(dpC[i]);
+    }
+    
+    free(maxC);
+    free(minC);
+    free(medianC);
+    free(mediaC);
+    free(dpC);
+}
+
+void allocate_region_data(int **maxR, int **minR, double **medianR, double **mediaR, double **dpR, int R){
+    *maxR = (int *)malloc(R*sizeof(int));
+    *minR = (int *)malloc(R*sizeof(int));
+    *medianR = (double *)malloc(R*sizeof(double));
+    *mediaR = (double *)malloc(R*sizeof(double));
+    *dpR = (double *)malloc(R*sizeof(double));
+}
+
+void deallocate_region_data(int *maxR, int *minR, double *medianR, double *mediaR, double *dpR){
+    free(maxR);
+    free(minR);
+    free(medianR);
+    free(mediaR);
+    free(dpR);
+}
+
+
+int get_minimum(int *freq){
+    size_t i = 0;
+
+    while(i < (MAX_GRADE + 1) && freq[i] == 0) ++i;
+
+    return i;
+}
+
+int get_maximum(int * freq){
+    size_t i = MAX_GRADE;
+
+    while(i >= 0 && freq[i] == 0) --i;
+
+    return i;
+}
+
+double get_median(int * freq, size_t n){
+    size_t left_pos = n/2, right_pos = n/2 + 1;
+    sh left_val = -1, right_val = -1;
+
+
+    if(n % 2 != 0) left_pos = right_pos;
+
+    size_t count = 0;
+
+    for(size_t i = 0; i < (MAX_GRADE + 1) && (left_val == -1 || right_val == -1); ++i){
+        count += freq[i];
+
+        if(count >= left_pos){
+            left_val = i; 
+            left_pos = n + 1;
+        }
+        if(count >= right_pos){
+            right_val = i;
+            right_pos = n + 1;
+        }
+    }
+
+    return (left_val + right_val) / 2.0F; 
+}
 
 int main(){
     
     int R, C, A, seed, i, j, k;
-    int maiorB, menorB, premR=0, premC[2] = {0};
-    double mediaB, medianaB, dpB, wtime;
+    int maxB, minB, premR=0, premC[2] = {0};
+    double mediaB, medianB, dpB, wtime;
 
     scanf("%d %d %d %d", &R, &C, &A, &seed);
     
     //alocar memoria
-    int*** notas = (int***)malloc(R*sizeof(int**));
-    int** maiorC = (int **)malloc(R*sizeof(int*));
-    int** menorC = (int **)malloc(R*sizeof(int*));
-    double** medianaC = (double **)malloc(R*sizeof(double*));
-    double** mediaC = (double **)malloc(R*sizeof(double*));
-    double** dpC = (double **)malloc(R*sizeof(double*));
+    //data
+    sh*** data = allocate_data(R, C, A, seed);
 
-    for(i=0; i<R; i++){
-        notas[i] = (int **) malloc(C * sizeof(int *));
-        maiorC[i] = (int*)malloc(C*sizeof(int));
-        menorC[i] = (int*)malloc(C*sizeof(int));
-        mediaC[i] = (double*)malloc(C*sizeof(double));
-        medianaC[i] = (double*)malloc(C*sizeof(double));
-        dpC[i] = (double*)malloc(C*sizeof(double));
+    //dados da cidade
+    int** maxC;
+    int** minC;
+    double** medianC;
+    double** mediaC;
+    double** dpC;
+    allocate_city_data(&maxC, &minC, &medianC, &mediaC, &dpC, R, C);
 
-        for(j=0; j<C; j++){
-            notas[i][j] = (int*) malloc(A*sizeof(int));
-        }
-    }
-
-    int* maiorR = (int *)malloc(R*sizeof(int));
-    int* menorR = (int *)malloc(R*sizeof(int));
-    double* medianaR = (double *)malloc(R*sizeof(double));
+    //dados da regiao
+    int* maxR = (int *)malloc(R*sizeof(int));
+    int* minR = (int *)malloc(R*sizeof(int));
+    double* medianR = (double *)malloc(R*sizeof(double));
     double* mediaR = (double *)malloc(R*sizeof(double));
     double* dpR = (double *)malloc(R*sizeof(double));
+    allocate_region_data(&maxR, &minR, &medianR, &mediaR, &dpR, R);
 
     //gerar valores
     srand(seed);
@@ -56,7 +170,7 @@ int main(){
 
             for(k=0; k<A; k++){
 
-                notas[i][j][k] = rand() % 101;
+                data[i][j][k] = rand() % 101;
 
             }
         }
@@ -67,7 +181,7 @@ int main(){
     for(i=0; i<R; i++){
         for(j=0; j<C; j++){
             for(k=0; k<A; k++){
-                printf("%d ", notas[i][j][k]);
+                printf("%d ", data[i][j][k]);
             }
             printf("\n");
         }
@@ -86,46 +200,23 @@ int main(){
             
             //contar frequencia de cada nota
             int* frequencies = (int *)calloc(101, sizeof(int));
-            countFrequencies(notas[i][j], A, frequencies);
+            countFrequencies(data[i][j], A, frequencies);
 
             //pegar a menor nota da cidade
-            for (int k = 0; k < 101; k++){
-                if (frequencies[k] > 0){
-                    menorC[i][j] = k;
-                    break;
-                }
-            }
+            minC[i][j] = get_minimum(frequencies);
 
             //pegar a maior nota da cidade
-            for (int k = 100; k >= 0; k--){
-                if (frequencies[k] > 0){
-                    maiorC[i][j] = k;
-                    break;
-                }
-            }
+            maxC[i][j] = get_maximum(frequencies);
 
             //pegar a mediana da cidade
-            int count = 0, leftPos = A/2, rightPos = A/2 + 1;
-            if (A%2 != 0)
-                leftPos = rightPos;
-            for (int k = 0; k < 101; k++){
-                count += frequencies[k];
-                if (count >= leftPos){
-                    medianaC[i][j] = k;
-                    leftPos = A;
-                }
-                if (count >= rightPos){
-                    medianaC[i][j] += k;
-                    medianaC[i][j] /= 2;
-                    break;
-                }
-            }
+            medianC[i][j] = get_median(frequencies, A);
 
-            //somar notas a variavel mediaR tambem e pegar a media da cidade j
+            //somar data a variavel mediaR tambem e pegar a media da cidade j
             mediaC[i][j]=0;
             for(k=0; k<A; k++){
-                mediaC[i][j] += notas[i][j][k];
+                mediaC[i][j] += data[i][j][k];
             }
+
             mediaC[i][j] /= A;
             mediaR[i] += mediaC[i][j];
             if(mediaC[i][j] > mediaC[premC[0]][premC[1]]){
@@ -136,17 +227,18 @@ int main(){
             //calcular desvio padrao da cidade j 
             dpC[i][j] = 0;
             for(k=0; k<A; k++){
-                dpC[i][j] += pow(notas[i][j][k] - mediaC[i][j],2);
+                dpC[i][j] += pow(data[i][j][k] - mediaC[i][j],2);
             }
             dpC[i][j] = sqrt(dpC[i][j]/A); 
             
+            //adicionar frequencias da cidade a regiao
             for (int i = 0; i < 101; i++){
                 frequenciesR[i] += frequencies[i];
             }
             free(frequencies);
         }
 
-        //somar notas a variavel mediaB tambem e pegar a media da regiao i
+        //somar data a variavel mediaB tambem e pegar a media da regiao i
         mediaR[i] /= C;
         mediaB += mediaR[i];
         if(mediaR[i] > mediaR[premR]){
@@ -154,50 +246,27 @@ int main(){
         }
 
         //pegar a menor nota da regiao
-        for (int k = 0; k < 101; k++){
-            if (frequenciesR[k] > 0){
-                menorR[i] = k;
-                break;
-            }
-        }
+        minR[i] = get_minimum(frequenciesR);
 
         //pegar a maior nota da regiao
-        for (int k = 100; k >= 0; k--){
-            if (frequenciesR[k] > 0){
-                maiorR[i] = k;
-                break;
-            }
-        }
+        maxR[i] = get_minimum(frequenciesR);
 
         //pegar a mediana da regiao
-        int count = 0, leftPos = (C*A)/2, rightPos = (C*A)/2 + 1;
-        if ((C*A)%2 != 0)
-            leftPos = rightPos;
-        for (int k = 0; k < 101; k++){
-            count += frequenciesR[k];
-            if (count >= leftPos){
-                medianaR[i] = k;
-                leftPos = C*A;
-            }
-            if (count >= rightPos){
-                medianaR[i] += k;
-                medianaR[i] /= 2;
-                break;
-            }
-        }
+        medianR[i] = get_median(frequenciesR, C*A);
 
-        //descobrir a maior e a menor nota da regiao i // calcular dp da regiao i
+        //calcular dp da regiao i
         dpR[i] = 0;
         for(j=0; j<C; j++){
             for(k=0; k<A; k++){
 
-                dpR[i] += pow(notas[i][j][k] - mediaR[i],2);
+                dpR[i] += pow(data[i][j][k] - mediaR[i],2);
 
             }
         }
 
         dpR[i] = sqrt(dpR[i]/(A*C));
 
+        //adicionar frequencias da regiao ao brasil
         for (int i = 0; i < 101; i++){
             frequenciesB[i] += frequenciesR[i];
         }
@@ -208,40 +277,17 @@ int main(){
     mediaB /= R;
 
     //pegar a menor nota do brasil
-    for (int k = 0; k < 101; k++){
-        if (frequenciesB[k] > 0){
-            menorB = k;
-            break;
-        }
-    }
+    minB = get_minimum(frequenciesB);
 
     //pegar a maior nota do brasil
-    for (int k = 100; k >= 0; k--){
-        if (frequenciesB[k] > 0){
-            maiorB = k;
-            break;
-        }
-    }
+    maxB = get_maximum(frequenciesB);
 
     //pegar a mediana do brasil
-    int count = 0, leftPos = (R*C*A)/2, rightPos = (R*C*A)/2 + 1;
-    if ((R*C*A)%2 != 0)
-        leftPos = rightPos;
-    for (int k = 0; k < 101; k++){
-        count += frequenciesB[k];
-        if (count >= leftPos){
-            medianaB = k;
-            leftPos = (R*C*A);
-        }
-        if (count >= rightPos){
-            medianaB += k;
-            medianaB /= 2;
-            break;
-        }
-    }
+    medianB = get_median(frequenciesB, R*C*A);
+
     free(frequenciesB);
 
-    //pegar a maior e a menor nota do brasil // calcular dp do brasil
+    //calcular dp do brasil
     dpB=0;
     for(i=0; i<R; i++){
 
@@ -249,12 +295,11 @@ int main(){
 
             for(k=0; k<A; k++){
 
-                dpB += pow(notas[i][j][k] - mediaB,2);
+                dpB += pow(data[i][j][k] - mediaB,2);
 
             }
         }
     }
-
     dpB = sqrt(dpB/(A*R*C)); 
 
     wtime = omp_get_wtime() - wtime;
@@ -264,7 +309,7 @@ int main(){
 
         for(j=0; j<C; j++){
 
-            printf("Reg %d - Cid %d: menor: %d, maior: %d, mediana: %0.2lf, média: %0.2lf e DP: %0.2lf\n", i, j, menorC[i][j], maiorC[i][j], medianaC[i][j], mediaC[i][j], dpC[i][j]);
+            printf("Reg %d - Cid %d: menor: %d, maior: %d, mediana: %0.2lf, média: %0.2lf e DP: %0.2lf\n", i, j, minC[i][j], maxC[i][j], medianC[i][j], mediaC[i][j], dpC[i][j]);
 
         }
 
@@ -273,11 +318,11 @@ int main(){
     }
 
     for(i=0; i<R; i++){
-        printf("Reg %d: menor: %d, maior: %d, mediana: %0.2lf, média: %0.2lf e DP: %0.2lf\n", i, menorR[i], maiorR[i], medianaR[i], mediaR[i], dpR[i]);
+        printf("Reg %d: menor: %d, maior: %d, mediana: %0.2lf, média: %0.2lf e DP: %0.2lf\n", i, minR[i], maxR[i], medianR[i], mediaR[i], dpR[i]);
     }
     printf("\n");
 
-    printf("Brasil: menor: %d, maior: %d, mediana: %0.2lf, média: %0.2lf e DP: %0.2lf\n", menorB, maiorB, medianaB, mediaB, dpB);
+    printf("Brasil: menor: %d, maior: %d, mediana: %0.2lf, média: %0.2lf e DP: %0.2lf\n", minB, maxB, medianB, mediaB, dpB);
 
     printf("Melhor região: Região %d\n", premR);
     printf("Melhor cidade: Região %d, Cidade %d\n", premC[0], premC[1]);
@@ -285,31 +330,11 @@ int main(){
     printf("Tempo de resposta sem considerar E/S, em segundos: %lfs\n", wtime);
  
     //desalocar memoria
-    for(i=0; i<R; i++){
-        for(j=0; j<C; j++){
-            free(notas[i][j]);
-        }
-        free(notas[i]);
-    }
-    free(notas);
-    for(i=0; i<R; i++){
-        free(maiorC[i]);
-        free(menorC[i]);
-        free(mediaC[i]);
-        free(medianaC[i]);
-        free(dpC[i]);
-    }
 
-    free(maiorC);
-    free(menorC);
-    free(maiorR);
-    free(menorR);
-    free(mediaC);
-    free(mediaR);
-    free(medianaR);
-    free(medianaC);
-    free(dpC);
-    free(dpR);
+    deallocate_data(data, R, C, A);
+    deallocate_data(data, R, C, A);
+    deallocate_city_data(maxC, minC, medianC, mediaC, dpC, R);
+    deallocate_region_data(maxR, minR, medianR, mediaR, dpR);
 
     return 0;
 }
