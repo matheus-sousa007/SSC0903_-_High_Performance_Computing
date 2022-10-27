@@ -112,7 +112,7 @@ int main(){
                 count += frequencies[k];
                 if (count >= leftPos){
                     medianaC[i][j] = k;
-                    leftPos = 101;
+                    leftPos = A;
                 }
                 if (count >= rightPos){
                     medianaC[i][j] += k;
@@ -126,8 +126,8 @@ int main(){
             for(k=0; k<A; k++){
                 mediaC[i][j] += notas[i][j][k];
             }
-            mediaR[i] += mediaC[i][j];
             mediaC[i][j] /= A;
+            mediaR[i] += mediaC[i][j];
             if(mediaC[i][j] > mediaC[premC[0]][premC[1]]){
                 premC[0] = i;
                 premC[1] = j;
@@ -146,8 +146,8 @@ int main(){
         }
 
         //somar notas a variavel mediaB tambem e pegar a media da regiao i
+        mediaR[i] /= C;
         mediaB += mediaR[i];
-        mediaR[i] /= (C*A);
         if(mediaR[i] > mediaR[premR]){
             premR = i;
         }
@@ -176,7 +176,7 @@ int main(){
             count += frequenciesR[k];
             if (count >= leftPos){
                 medianaR[i] = k;
-                leftPos = 101;
+                leftPos = C*A;
             }
             if (count >= rightPos){
                 medianaR[i] += k;
@@ -204,7 +204,7 @@ int main(){
     }
 
     //pegar media do brasil
-    mediaB /= (R*C*A);
+    mediaB /= R;
 
     //pegar a menor nota do brasil
     for (int k = 0; k < 101; k++){
@@ -230,7 +230,7 @@ int main(){
         count += frequenciesB[k];
         if (count >= leftPos){
             medianaB = k;
-            leftPos = 101;
+            leftPos = (R*C*A);
         }
         if (count >= rightPos){
             medianaB += k;

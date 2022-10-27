@@ -1,6 +1,6 @@
 CC=gcc
 OMP=-fopenmp
-DIROPT=-Ofast	
+DIROPT=-O3	
 BINARY=./studentspar
 SOURCE=./studentspar.c 
 
