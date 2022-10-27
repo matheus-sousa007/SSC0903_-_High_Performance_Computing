@@ -93,9 +93,12 @@ int main(){
             media_cidade /= A;
             mediaC[i][j] = media_cidade;
             media_regiao += media_cidade;
-            if(mediaC[i][j] > mediaC[premC[0]][premC[1]]){
-                premC[0] = i;
-                premC[1] = j;
+            #pragma omp critical(prem_c)
+            {
+                if(mediaC[i][j] > mediaC[premC[0]][premC[1]]){
+                    premC[0] = i;
+                    premC[1] = j;
+                }
             }
 
             dpC[i][j] = sqrt(soma_quad_cidade/A - (media_cidade * media_cidade));
@@ -118,8 +121,11 @@ int main(){
         media_regiao /= C;
         mediaR[i] = media_regiao;
         media_br += media_regiao;
-        if(mediaR[i] > mediaR[premR]){
-            premR = i;
+        #pragma omp critical(prem_r)
+        {
+            if(mediaR[i] > mediaR[premR]){
+                premR = i;
+            }
         }
 
         dpR[i] = sqrt(soma_quad_regiao/(C * A) - (media_regiao * media_regiao));

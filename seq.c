@@ -134,6 +134,7 @@ int main(){
             }
 
             //calcular desvio padrao da cidade j 
+            dpC[i][j] = 0;
             for(k=0; k<A; k++){
                 dpC[i][j] += pow(notas[i][j][k] - mediaC[i][j],2);
             }
