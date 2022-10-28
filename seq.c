@@ -134,6 +134,18 @@ double get_median(int * freq, size_t n){
     return (left_val + right_val) / 2.0F; 
 }
 
+void reset_freq(int *freq){
+    for(size_t i = 0; i < (MAX_GRADE + 1); ++i){
+        freq[i] = 0;
+    }
+}
+
+void merge_freq(int *freq1, int *freq2){
+    for(size_t i = 0; i < (MAX_GRADE + 1); ++i){
+        freq1[i] += freq2[i];
+    }
+}
+
 int main(){
     
     int R, C, A, seed, i, j, k;
@@ -191,30 +203,37 @@ int main(){
     wtime = omp_get_wtime();
 
     int* frequenciesB = (int *)calloc(101, sizeof(int));
+    int* frequenciesR = (int *)malloc(101*sizeof(int));
+    int* frequenciesC = (int *)malloc(101*sizeof(int));
+
     mediaB=0;
+    double soma_quad_br = 0.0F;
     for(i=0; i<R; i++){
+        double soma_quad_regiao = 0.0F;
         
-        int* frequenciesR = (int *)calloc(101, sizeof(int));
+        reset_freq(frequenciesR);
         mediaR[i]=0;
         for(j=0; j<C; j++){
+            double soma_quad_cidade = 0.0F;
             
             //contar frequencia de cada nota
-            int* frequencies = (int *)calloc(101, sizeof(int));
-            countFrequencies(data[i][j], A, frequencies);
+            reset_freq(frequenciesC);
+            countFrequencies(data[i][j], A, frequenciesC);
 
             //pegar a menor nota da cidade
-            minC[i][j] = get_minimum(frequencies);
+            minC[i][j] = get_minimum(frequenciesC);
 
             //pegar a maior nota da cidade
-            maxC[i][j] = get_maximum(frequencies);
+            maxC[i][j] = get_maximum(frequenciesC);
 
             //pegar a mediana da cidade
-            medianC[i][j] = get_median(frequencies, A);
+            medianC[i][j] = get_median(frequenciesC, A);
 
             //somar data a variavel mediaR tambem e pegar a media da cidade j
             mediaC[i][j]=0;
             for(k=0; k<A; k++){
                 mediaC[i][j] += data[i][j][k];
+                soma_quad_cidade += data[i][j][k] * data[i][j][k];
             }
 
             mediaC[i][j] /= A;
@@ -225,17 +244,11 @@ int main(){
             }
 
             //calcular desvio padrao da cidade j 
-            dpC[i][j] = 0;
-            for(k=0; k<A; k++){
-                dpC[i][j] += pow(data[i][j][k] - mediaC[i][j],2);
-            }
-            dpC[i][j] = sqrt(dpC[i][j]/A); 
+            dpC[i][j] = sqrt(soma_quad_cidade/A - (mediaC[i][j]*mediaC[i][j]));
+            soma_quad_regiao += soma_quad_cidade;
             
             //adicionar frequencias da cidade a regiao
-            for (int i = 0; i < 101; i++){
-                frequenciesR[i] += frequencies[i];
-            }
-            free(frequencies);
+            merge_freq(frequenciesR, frequenciesC);
         }
 
         //somar data a variavel mediaB tambem e pegar a media da regiao i
@@ -249,32 +262,22 @@ int main(){
         minR[i] = get_minimum(frequenciesR);
 
         //pegar a maior nota da regiao
-        maxR[i] = get_minimum(frequenciesR);
+        maxR[i] = get_maximum(frequenciesR);
 
         //pegar a mediana da regiao
         medianR[i] = get_median(frequenciesR, C*A);
 
         //calcular dp da regiao i
-        dpR[i] = 0;
-        for(j=0; j<C; j++){
-            for(k=0; k<A; k++){
-
-                dpR[i] += pow(data[i][j][k] - mediaR[i],2);
-
-            }
-        }
-
-        dpR[i] = sqrt(dpR[i]/(A*C));
+        dpR[i] = sqrt(soma_quad_regiao/(C * A) - (mediaR[i] * mediaR[i]));
+        soma_quad_br += soma_quad_regiao;
 
         //adicionar frequencias da regiao ao brasil
-        for (int i = 0; i < 101; i++){
-            frequenciesB[i] += frequenciesR[i];
-        }
-        free(frequenciesR);
+        merge_freq(frequenciesB, frequenciesR);
     }
 
     //pegar media do brasil
     mediaB /= R;
+
 
     //pegar a menor nota do brasil
     minB = get_minimum(frequenciesB);
@@ -285,22 +288,8 @@ int main(){
     //pegar a mediana do brasil
     medianB = get_median(frequenciesB, R*C*A);
 
-    free(frequenciesB);
-
     //calcular dp do brasil
-    dpB=0;
-    for(i=0; i<R; i++){
-
-        for(j=0; j<C; j++){
-
-            for(k=0; k<A; k++){
-
-                dpB += pow(data[i][j][k] - mediaB,2);
-
-            }
-        }
-    }
-    dpB = sqrt(dpB/(A*R*C)); 
+    dpB = sqrt(soma_quad_br/(R * C * A) - (mediaB * mediaB)); 
 
     wtime = omp_get_wtime() - wtime;
 
@@ -334,6 +323,9 @@ int main(){
     deallocate_data(data, R, C, A);
     deallocate_city_data(maxC, minC, medianC, mediaC, dpC, R);
     deallocate_region_data(maxR, minR, medianR, mediaR, dpR);
+    free(frequenciesB);
+    free(frequenciesR);
+    free(frequenciesC);
 
     return 0;
 }
