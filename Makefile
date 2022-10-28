@@ -1,19 +1,33 @@
 CC=gcc
 OMP=-fopenmp
-DIROPT=-O3	
-BINARY=./studentspar
-SOURCE=./studentspar.c 
-BINARY_SEQ=./seq
-SOURCE_SEQ=./seq.c 
+DIROPT=-Ofast	
+BINARY_PAR=./studentspar
+SOURCE_PAR=./studentspar.c 
+BINARY_SEQ=./studentsseq
+SOURCE_SEQ=./studentsseq.c 
+BINARY_SEQOPT=./studentsseq_opt
 
-all:
-	$(CC) $(SOURCE) -o $(BINARY) $(OMP) -lm
 
-optimized:
-	$(CC) $(SOURCE) -o $(BINARY) $(DIROPT) $(OMP) -lm
+sequential:
+	$(CC) $(SOURCE_SEQ) -o $(BINARY_SEQ) $(OMP) -lm
+
+sequential_optimized:
+	$(CC) $(SOURCE_SEQ) -o $(BINARY_SEQOPT) $(OMP) $(DIROPT) -lm 
+
+parallel:
+	$(CC) $(SOURCE_PAR) -o $(BINARY_PAR) $(OMP) -lm
+
+parallel_optimized:
+	$(CC) $(SOURCE_PAR) -o $(BINARY_PAR) $(DIROPT) $(OMP) -lm
  
-run:
-	$(BINARY)
+run_sequential:
+	$(BINARY_SEQ)
+
+run_sequential_opt:
+	$(BINARY_SEQOPT)
+
+run_parallel:
+	$(BINARY_PAR)
 
 valgrind:
 	$(CC) $(SOURCE) -o $(BINARY) $(OMP) -lm -g

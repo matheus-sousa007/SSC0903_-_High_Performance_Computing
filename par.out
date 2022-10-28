@@ -1,0 +1,25 @@
+./studentspar
+Reg 0 - Cid 0: menor: 17, maior: 99, mediana: 71.50, média: 67.83 e DP: 26.08
+Reg 0 - Cid 1: menor: 7, maior: 100, mediana: 38.50, média: 49.33 e DP: 34.75
+Reg 0 - Cid 2: menor: 14, maior: 78, mediana: 65.50, média: 56.17 e DP: 21.96
+Reg 0 - Cid 3: menor: 2, maior: 100, mediana: 44.00, média: 47.17 e DP: 38.33
+
+Reg 1 - Cid 0: menor: 29, maior: 94, mediana: 65.50, média: 64.33 e DP: 20.41
+Reg 1 - Cid 1: menor: 35, maior: 84, mediana: 71.00, média: 66.83 e DP: 16.60
+Reg 1 - Cid 2: menor: 4, maior: 100, mediana: 21.50, média: 38.83 e DP: 36.61
+Reg 1 - Cid 3: menor: 1, maior: 85, mediana: 34.50, média: 39.00 e DP: 31.32
+
+Reg 2 - Cid 0: menor: 3, maior: 84, mediana: 40.00, média: 41.00 e DP: 30.75
+Reg 2 - Cid 1: menor: 1, maior: 97, mediana: 54.50, média: 47.50 e DP: 33.82
+Reg 2 - Cid 2: menor: 0, maior: 80, mediana: 50.00, média: 46.67 e DP: 29.39
+Reg 2 - Cid 3: menor: 1, maior: 96, mediana: 42.00, média: 44.33 e DP: 29.58
+
+Reg 0: menor: 2, maior: 100, mediana: 64.00, média: 55.12 e DP: 32.01
+Reg 1: menor: 1, maior: 100, mediana: 60.00, média: 52.25 e DP: 30.53
+Reg 2: menor: 0, maior: 97, mediana: 48.00, média: 44.88 e DP: 31.04
+
+Brasil: menor: 0, maior: 100, mediana: 59.00, média: 50.75 e DP: 31.49
+Melhor região: Região 0
+Melhor cidade: Região 0, Cidade 0
+
+Tempo executado em paralelo: 0.006165s

@@ -11,17 +11,17 @@
 
 typedef short int sh;
 
-sh ***allocate_data(int R, int C, int A, int seed);
-void deallocate_data(sh ***data, int R, int C, int A);
-void allocate_city_data(int ***maxC, int ***minC, double ***medianC, double ***mediaC, double ***dpC, int R, int C);
-void deallocate_city_data(int **maxC, int **minC, double **medianC, double **mediaC, double **dpC, int R);
-void allocate_region_data(int **maxR, int **minR, double **medianR, double **mediaR, double **dpR, int R);
-void deallocate_region_data(int *maxR, int *minR, double *medianR, double *mediaR, double *dpR);
+int8_t ***allocate_data(int R, int C, int A, int seed);
+void deallocate_data(int8_t ***data, int R, int C, int A);
+void allocate_city_data(int8_t ***maxC, int8_t ***minC, double ***medianC, double ***mediaC, double ***dpC, int R, int C);
+void deallocate_city_data(int8_t **maxC, int8_t **minC, double **medianC, double **mediaC, double **dpC, int R);
+void allocate_region_data(int8_t **maxR, int8_t **minR, double **medianR, double **mediaR, double **dpR, int R);
+void deallocate_region_data(int8_t *maxR, int8_t *minR, double *medianR, double *mediaR, double *dpR);
 void print_freq(int *freq);
-int get_minimum(int * freq);
-int get_maximum(int * freq);
+int8_t get_minimum(int * freq);
+int8_t get_maximum(int * freq);
 double get_median(int * freq, size_t n);
-void print_data(sh min, sh max, sh median, double mean, double std_deviation);
+void print_data(int8_t min, int8_t max, int8_t median, double mean, double std_deviation);
 void reset_freq(int *freq);
 void merge_freq(int *freq1, int *freq2);
 
@@ -34,7 +34,7 @@ int main(){
     scanf("%d", &A);
     scanf("%d", &seed);
 
-    sh *** data = allocate_data(R, C, A, seed);
+    int8_t *** data = allocate_data(R, C, A, seed);
 
     /* int * freq_cidade = (int *)malloc((MAX_GRADE + 1) * sizeof(int));
     int * freq_regiao = (int *)malloc((MAX_GRADE + 1) * sizeof(int));
@@ -46,16 +46,16 @@ int main(){
     reset_freq(freq_br);
 
     // dados das cidades a serem salvos
-    int** maxC;
-    int** minC;
+    int8_t** maxC;
+    int8_t** minC;
     double** medianC;
     double** mediaC;
     double** dpC;
     allocate_city_data(&maxC, &minC, &medianC, &mediaC, &dpC, R, C);
 
     // dados das regioes a serem salvos
-    int* maxR;
-    int* minR;
+    int8_t* maxR;
+    int8_t* minR;
     double* medianR;
     double* mediaR;
     double* dpR;
@@ -148,8 +148,8 @@ int main(){
     media_br /= R;
     double dp_br = sqrt(soma_quad_br/(R * C * A) - (media_br * media_br));
 
-    sh min_br = get_minimum(freq_br);
-    sh max_br = get_maximum(freq_br);
+    int8_t min_br = get_minimum(freq_br);
+    int8_t max_br = get_maximum(freq_br);
     double median_br = get_median(freq_br, R * C * A);
 
     double end = omp_get_wtime();
@@ -190,15 +190,15 @@ int main(){
 }
 
 
-sh ***allocate_data(int R, int C, int A, int seed){
+int8_t ***allocate_data(int R, int C, int A, int seed){
     srand(seed);
 
-    sh *** data = (sh ***)malloc(R * sizeof(sh **));
+    int8_t *** data = (int8_t ***)malloc(R * sizeof(int8_t **));
 
     for(int i = 0; i < R; ++i){
-        data[i] = (sh **)malloc(C * sizeof(sh *));
+        data[i] = (int8_t **)malloc(C * sizeof(int8_t *));
         for(int j = 0; j < C; ++j){
-            data[i][j] = (sh *)malloc(A * sizeof(sh));
+            data[i][j] = (int8_t *)malloc(A * sizeof(int8_t));
             for(int k = 0; k < A; ++k){
                 data[i][j][k] = rand() % (MAX_GRADE + 1);
             }
@@ -209,7 +209,7 @@ sh ***allocate_data(int R, int C, int A, int seed){
 }
 
 
-void deallocate_data(sh ***data, int R, int C, int A){
+void deallocate_data(int8_t ***data, int R, int C, int A){
     for(int i = 0; i < R; ++i){
         for(int j = 0; j < C; ++j){
             free(data[i][j]);
@@ -219,23 +219,23 @@ void deallocate_data(sh ***data, int R, int C, int A){
     free(data);
 }
 
-void allocate_city_data(int ***maxC, int ***minC, double ***medianC, double ***mediaC, double ***dpC, int R, int C){
-    *maxC = (int **)malloc(R*sizeof(int*));
-    *minC = (int **)malloc(R*sizeof(int*));
+void allocate_city_data(int8_t ***maxC, int8_t ***minC, double ***medianC, double ***mediaC, double ***dpC, int R, int C){
+    *maxC = (int8_t **)malloc(R*sizeof(int8_t*));
+    *minC = (int8_t **)malloc(R*sizeof(int8_t*));
     *medianC = (double **)malloc(R*sizeof(double*));
     *mediaC = (double **)malloc(R*sizeof(double*));
     *dpC = (double **)malloc(R*sizeof(double*));
 
     for(int i=0; i<R; i++){
-        (*maxC)[i] = (int*)malloc(C*sizeof(int));
-        (*minC)[i] = (int*)malloc(C*sizeof(int));
+        (*maxC)[i] = (int8_t*)malloc(C*sizeof(int8_t));
+        (*minC)[i] = (int8_t*)malloc(C*sizeof(int8_t));
         (*medianC)[i] = (double*)malloc(C*sizeof(double));
         (*mediaC)[i] = (double*)malloc(C*sizeof(double));
         (*dpC)[i] = (double*)malloc(C*sizeof(double));
     }
 }
 
-void deallocate_city_data(int **maxC, int **minC, double **medianC, double **mediaC, double **dpC, int R){
+void deallocate_city_data(int8_t **maxC, int8_t **minC, double **medianC, double **mediaC, double **dpC, int R){
     for(int i=0; i<R; i++){
         free(maxC[i]);
         free(minC[i]);
@@ -251,15 +251,15 @@ void deallocate_city_data(int **maxC, int **minC, double **medianC, double **med
     free(dpC);
 }
 
-void allocate_region_data(int **maxR, int **minR, double **medianR, double **mediaR, double **dpR, int R){
-    *maxR = (int *)malloc(R*sizeof(int));
-    *minR = (int *)malloc(R*sizeof(int));
+void allocate_region_data(int8_t **maxR, int8_t **minR, double **medianR, double **mediaR, double **dpR, int R){
+    *maxR = (int8_t *)malloc(R*sizeof(int8_t));
+    *minR = (int8_t *)malloc(R*sizeof(int8_t));
     *medianR = (double *)malloc(R*sizeof(double));
     *mediaR = (double *)malloc(R*sizeof(double));
     *dpR = (double *)malloc(R*sizeof(double));
 }
 
-void deallocate_region_data(int *maxR, int *minR, double *medianR, double *mediaR, double *dpR){
+void deallocate_region_data(int8_t *maxR, int8_t *minR, double *medianR, double *mediaR, double *dpR){
     free(maxR);
     free(minR);
     free(medianR);
@@ -276,7 +276,7 @@ void print_freq(int *freq){
 }
 
 
-int get_minimum(int * freq){
+int8_t get_minimum(int * freq){
     size_t i = 0;
 
     while(i < (MAX_GRADE + 1) && freq[i] == 0) ++i;
@@ -284,7 +284,7 @@ int get_minimum(int * freq){
     return i;
 }
 
-int get_maximum(int * freq){
+int8_t get_maximum(int * freq){
     size_t i = MAX_GRADE;
 
     while(i >= 0 && freq[i] == 0) --i;
@@ -294,7 +294,7 @@ int get_maximum(int * freq){
 
 double get_median(int * freq, size_t n){
     size_t left_pos = n/2, right_pos = n/2 + 1;
-    sh left_val = -1, right_val = -1;
+    int8_t left_val = -1, right_val = -1;
 
 
     if(n % 2 != 0) left_pos = right_pos;
@@ -317,7 +317,7 @@ double get_median(int * freq, size_t n){
     return (left_val + right_val) / 2.0F; 
 }
 
-void print_data(sh min, sh max, sh median, double mean, double std_deviation){
+void print_data(int8_t min, int8_t max, int8_t median, double mean, double std_deviation){
     printf("menor: %hd, maior: %hd, mediana: %hd, média: %.2lf e DP: %.2lf\n", min, max, median, mean, std_deviation);
 }
 
