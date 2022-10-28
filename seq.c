@@ -155,11 +155,11 @@ int main(){
     allocate_city_data(&maxC, &minC, &medianC, &mediaC, &dpC, R, C);
 
     //dados da regiao
-    int* maxR = (int *)malloc(R*sizeof(int));
-    int* minR = (int *)malloc(R*sizeof(int));
-    double* medianR = (double *)malloc(R*sizeof(double));
-    double* mediaR = (double *)malloc(R*sizeof(double));
-    double* dpR = (double *)malloc(R*sizeof(double));
+    int* maxR;
+    int* minR;
+    double* medianR;
+    double* mediaR;
+    double* dpR;
     allocate_region_data(&maxR, &minR, &medianR, &mediaR, &dpR, R);
 
     //gerar valores
@@ -331,7 +331,6 @@ int main(){
  
     //desalocar memoria
 
-    deallocate_data(data, R, C, A);
     deallocate_data(data, R, C, A);
     deallocate_city_data(maxC, minC, medianC, mediaC, dpC, R);
     deallocate_region_data(maxR, minR, medianR, mediaR, dpR);
